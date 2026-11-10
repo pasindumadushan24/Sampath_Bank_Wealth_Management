@@ -1,0 +1,24 @@
+{
+  "collectionName": "components_shared_seos",
+  "info": {
+    "displayName": "SEO",
+    "description": "Reusable SEO fields - used by all content types that need search engine optimisation"
+  },
+  "options": {},
+  "attributes": {
+    "metaTitle": {
+      "type": "string",
+      "maxLength": 60,
+      "required": false
+    },
+    "metaDescription": {
+      "type": "text",
+      "maxLength": 160,
+      "required": false
+    },
+    "keywords": {
+      "type": "text",
+      "required": false
+    }
+  }
+}

@@ -1,0 +1,69 @@
+{
+  "kind": "collectionType",
+  "collectionName": "enquiries",
+  "info": {
+    "singularName": "enquiry",
+    "pluralName": "enquiries",
+    "displayName": "Enquiry",
+    "description": "Customer enquiries and lead submissions from the website contact forms"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "fullName": {
+      "type": "string",
+      "required": true,
+      "maxLength": 150
+    },
+    "email": {
+      "type": "email",
+      "required": true
+    },
+    "phone": {
+      "type": "string",
+      "maxLength": 20
+    },
+    "subject": {
+      "type": "string",
+      "required": true,
+      "maxLength": 200
+    },
+    "message": {
+      "type": "text",
+      "required": true
+    },
+    "enquiryType": {
+      "type": "enumeration",
+      "enum": [
+        "general",
+        "investment-product",
+        "account-opening",
+        "other"
+      ],
+      "default": "general",
+      "required": true
+    },
+    "interestedProduct": {
+      "type": "string",
+      "maxLength": 200
+    },
+    "status": {
+      "type": "enumeration",
+      "enum": [
+        "new",
+        "in-progress",
+        "resolved",
+        "closed"
+      ],
+      "default": "new"
+    },
+    "submittedAt": {
+      "type": "datetime"
+    },
+    "notes": {
+      "type": "text"
+    }
+  }
+}
