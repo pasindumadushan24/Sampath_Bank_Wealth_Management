@@ -3,6 +3,8 @@ import ArticleCard from '../components/ArticleCard';
 import { getArticles } from '../lib/api';
 
 
+export const instant = false;
+
 export const metadata = {
   title: 'Market Insights',
   description: 'Stay informed with market analysis, investment tips, and economic news from Sampath Bank Wealth Management.',
@@ -19,13 +21,36 @@ const demoArticles = [
 
 const categories = ['All', 'Market Insights', 'Investment Tips', 'Economic News', 'Product Updates'];
 
+const categoryDisplayMap = {
+  'market-insights': 'Market Insights',
+  'investment-tips': 'Investment Tips',
+  'economic-news': 'Economic News',
+  'product-updates': 'Product Updates',
+  'general': 'Market Insights',
+  'Market Insights': 'Market Insights',
+  'Investment Tips': 'Investment Tips',
+  'Economic News': 'Economic News',
+  'Product Updates': 'Product Updates',
+};
+
+function normalizeArticle(item) {
+  if (!item) return null;
+  const raw = item.attributes ? { ...item.attributes, id: item.id } : { ...item };
+  return {
+    ...raw,
+    id: raw.id || raw.documentId,
+    category: categoryDisplayMap[raw.category] || raw.category || 'Market Insights',
+    publishedAt: raw.publishedDate || raw.publishedAt || raw.createdAt,
+  };
+}
+
 export default async function InsightsPage({ searchParams }) {
   let articles = [];
 
   try {
     const data = await getArticles();
-    if (data?.data?.length > 0) {
-      articles = data.data.map((a) => ({ ...a.attributes, id: a.id }));
+    if (data?.data && Array.isArray(data.data) && data.data.length > 0) {
+      articles = data.data.map(normalizeArticle).filter((a) => a && a.title);
     }
   } catch {
     // fall through
@@ -110,5 +135,6 @@ export default async function InsightsPage({ searchParams }) {
         </div>
       </section>
     </>
+    
   );
 }

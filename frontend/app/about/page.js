@@ -1,6 +1,8 @@
 import Link from 'next/link';
 import SectionHeading from '../components/SectionHeading';
+import { getTeamMembers } from '../lib/api';
 
+export const instant = false;
 
 export const metadata = {
   title: 'About Us',
@@ -17,14 +19,7 @@ const milestones = [
   { year: '2025', event: 'AUM exceeds LKR 100 Billion — Premier Wealth Manager in Sri Lanka' },
 ];
 
-const team = [
-  { name: 'Nimal Jayawardena', role: 'Head of Wealth Management', initials: 'NJ' },
-  { name: 'Priya Mendis', role: 'Chief Investment Officer', initials: 'PM' },
-  { name: 'Rohan Silva', role: 'Director — Private Banking', initials: 'RS' },
-  { name: 'Amali Fernando', role: 'Head of Research & Analytics', initials: 'AF' },
-  { name: 'Dhanuka Perera', role: 'Head of Client Relations', initials: 'DP' },
-  { name: 'Shirani Rathnayake', role: 'Senior Fund Manager', initials: 'SR' },
-];
+const team = [];
 
 const awards = [
   { award: 'Best Wealth Management Bank', org: 'Asiamoney Awards 2024', icon: '🏆' },
@@ -33,7 +28,33 @@ const awards = [
   { award: 'Most Trusted Financial Institution', org: 'Reader\'s Digest Sri Lanka 2024', icon: '🛡️' },
 ];
 
-export default function AboutPage() {
+export default async function AboutPage() {
+  let teamMembers = team;
+  try {
+    const data = await getTeamMembers();
+    if (data?.data && Array.isArray(data.data) && data.data.length > 0) {
+      teamMembers = data.data
+        .map((m) => {
+          const raw = m.attributes ? { ...m.attributes, id: m.id } : { ...m };
+          const calculatedInitials = raw.name
+            ? raw.name
+                .split(' ')
+                .map((n) => n[0])
+                .join('')
+                .slice(0, 2)
+                .toUpperCase()
+            : 'SB';
+          return {
+            name: raw.name,
+            role: raw.role,
+            initials: raw.initials || calculatedInitials,
+          };
+        })
+        .filter((m) => m && m.name);
+    }
+  } catch {
+    // fall back to default team
+  }
   return (
     <>
       {/* Hero */}
@@ -137,7 +158,7 @@ export default function AboutPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <SectionHeading title="Our Leadership Team" subtitle="Experienced professionals dedicated to your financial success." centered />
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-            {team.map((member) => (
+            {teamMembers.map((member) => (
               <div key={member.name} className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 text-center hover:shadow-md hover:border-[#C8961E] transition-all duration-200">
                 <div className="w-20 h-20 rounded-full bg-gradient-to-br from-[#1B2B5B] to-[#2a3f7a] flex items-center justify-center mx-auto mb-4 text-white font-bold text-xl">
                   {member.initials}

@@ -9,11 +9,11 @@ export async function fetchAPI(path, params = {}) {
       headers: {
         'Content-Type': 'application/json',
       },
-      next: { revalidate: 60 },
+      cache: 'no-store',
     });
 
     if (res.status === 403) {
-      // Strapi Public role permissions not granted yet for this collection type
+      
       return null;
     }
 
@@ -23,7 +23,7 @@ export async function fetchAPI(path, params = {}) {
 
     return await res.json();
   } catch {
-    // Strapi backend offline or unreachable
+    
     return null;
   }
 }
@@ -96,6 +96,18 @@ export async function getFeaturedArticles() {
       'populate': '*',
       'filters[isFeatured][$eq]': 'true',
       'pagination[pageSize]': '3',
+    });
+    return data || { data: [] };
+  } catch {
+    return { data: [] };
+  }
+}
+
+export async function getTeamMembers(params = {}) {
+  try {
+    const data = await fetchAPI('/team-members', {
+      'sort': 'order:asc',
+      ...params,
     });
     return data || { data: [] };
   } catch {

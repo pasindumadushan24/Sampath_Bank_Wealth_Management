@@ -100,12 +100,12 @@ export default function ContactForm({ prefilledProduct = '' }) {
     );
   }
 
-  const inputClass = (field) =>
-    `w-full border rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 transition-colors ${
-      errors[field]
-        ? 'border-red-400 focus:ring-red-200 bg-red-50'
-        : 'border-gray-200 focus:ring-[#C8961E]/30 focus:border-[#C8961E] bg-white'
-    }`;
+const inputClass = (field) =>
+  `w-full border rounded-xl px-4 py-3 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 transition-colors ${
+    errors[field]
+      ? 'border-red-400 focus:ring-red-200 bg-red-50'
+      : 'border-gray-200 focus:ring-[#C8961E]/30 focus:border-[#C8961E] bg-white'
+  }`;
 
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
@@ -158,10 +158,10 @@ export default function ContactForm({ prefilledProduct = '' }) {
         <div>
           <label className="block text-sm font-semibold text-gray-700 mb-2">Enquiry Type</label>
           <select
-            name="enquiryType"
-            value={formData.enquiryType}
-            onChange={handleChange}
-            className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#C8961E]/30 focus:border-[#C8961E] bg-white"
+           name="enquiryType"
+value={formData.enquiryType}
+onChange={handleChange}
+className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#C8961E]/30 focus:border-[#C8961E] bg-white"
           >
             {enquiryTypes.map((t) => (
               <option key={t} value={t}>{t}</option>

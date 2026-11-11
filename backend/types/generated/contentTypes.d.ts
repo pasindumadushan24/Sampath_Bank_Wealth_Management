@@ -783,6 +783,50 @@ export interface ApiInvestmentProductInvestmentProduct
   };
 }
 
+export interface ApiTeamMemberTeamMember extends Struct.CollectionTypeSchema {
+  collectionName: 'team_members';
+  info: {
+    description: 'Leadership and management team members of Sampath Wealth Management';
+    displayName: 'Team Member';
+    pluralName: 'team-members';
+    singularName: 'team-member';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    initials: Schema.Attribute.String &
+      Schema.Attribute.SetMinMaxLength<{
+        maxLength: 10;
+      }>;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::team-member.team-member'
+    > &
+      Schema.Attribute.Private;
+    name: Schema.Attribute.String &
+      Schema.Attribute.Required &
+      Schema.Attribute.SetMinMaxLength<{
+        maxLength: 150;
+      }>;
+    order: Schema.Attribute.Integer & Schema.Attribute.DefaultTo<1>;
+    photo: Schema.Attribute.Media<'images'>;
+    publishedAt: Schema.Attribute.DateTime;
+    role: Schema.Attribute.String &
+      Schema.Attribute.Required &
+      Schema.Attribute.SetMinMaxLength<{
+        maxLength: 200;
+      }>;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
 export interface PluginContentReleasesRelease
   extends Struct.CollectionTypeSchema {
   collectionName: 'strapi_releases';
@@ -1299,6 +1343,7 @@ declare module '@strapi/strapi' {
       'api::article.article': ApiArticleArticle;
       'api::enquiry.enquiry': ApiEnquiryEnquiry;
       'api::investment-product.investment-product': ApiInvestmentProductInvestmentProduct;
+      'api::team-member.team-member': ApiTeamMemberTeamMember;
       'plugin::content-releases.release': PluginContentReleasesRelease;
       'plugin::content-releases.release-action': PluginContentReleasesReleaseAction;
       'plugin::i18n.locale': PluginI18NLocale;

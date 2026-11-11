@@ -1,0 +1,39 @@
+{
+  "kind": "collectionType",
+  "collectionName": "team_members",
+  "info": {
+    "singularName": "team-member",
+    "pluralName": "team-members",
+    "displayName": "Team Member",
+    "description": "Leadership and management team members of Sampath Wealth Management"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "name": {
+      "type": "string",
+      "required": true,
+      "maxLength": 150
+    },
+    "role": {
+      "type": "string",
+      "required": true,
+      "maxLength": 200
+    },
+    "initials": {
+      "type": "string",
+      "maxLength": 10
+    },
+    "order": {
+      "type": "integer",
+      "default": 1
+    },
+    "photo": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": ["images"]
+    }
+  }
+}

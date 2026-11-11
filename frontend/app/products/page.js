@@ -4,6 +4,8 @@ import SectionHeading from '../components/SectionHeading';
 import { getProducts } from '../lib/api';
 
 
+export const instant = false;
+
 export const metadata = {
   title: 'Investment Products',
   description: 'Explore Sampath Bank Wealth Management investment products including Fixed Deposits, Unit Trusts, Bonds and more.',
@@ -28,8 +30,14 @@ export default async function ProductsPage({ searchParams }) {
 
   try {
     const data = await getProducts();
-    if (data?.data?.length > 0) {
-      products = data.data.map((p) => ({ ...p.attributes, id: p.id }));
+    if (data?.data && Array.isArray(data.data) && data.data.length > 0) {
+      products = data.data.map((p) => {
+        const raw = p.attributes ? { ...p.attributes, id: p.id } : { ...p };
+        return {
+          ...raw,
+          id: raw.id || raw.documentId,
+        };
+      }).filter((p) => p && p.title);
     }
   } catch {
     // fall through to demo

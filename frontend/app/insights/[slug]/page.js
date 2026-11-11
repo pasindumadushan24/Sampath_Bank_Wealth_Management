@@ -64,8 +64,14 @@ export default async function ArticleDetailPage({ params }) {
   let article = null;
 
   try {
-    article = await getArticleBySlug(slug);
-    if (article) article = article.attributes || article;
+    const res = await getArticleBySlug(slug);
+    if (res) {
+      const raw = res.attributes ? { ...res.attributes, id: res.id } : res;
+      article = {
+        ...raw,
+        publishedAt: raw.publishedDate || raw.publishedAt || raw.createdAt,
+      };
+    }
   } catch {
     // fall through
   }

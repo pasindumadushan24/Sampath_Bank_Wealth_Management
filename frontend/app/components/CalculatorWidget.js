@@ -65,7 +65,7 @@ export default function CalculatorWidget() {
   };
 
   const inputClass = (field) =>
-    `w-full border rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 transition-colors ${
+      `w-full border rounded-xl px-4 py-3 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 transition-colors ${
       errors[field]
         ? 'border-red-400 bg-red-50 focus:ring-red-200'
         : 'border-gray-200 focus:ring-[#C8961E]/30 focus:border-[#C8961E] bg-white'
