@@ -3,6 +3,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { generateApplicationPdf } from '../lib/pdfGenerator';
 import SectionHeading from '../components/SectionHeading';
+import { submitApplication } from '../lib/api';
 
 const branches = [
   'Colombo - Head Office (110 Sir James Peiris Mw)',
@@ -53,6 +54,8 @@ export default function ApplyPage() {
   const [errors, setErrors] = useState({});
   const [status, setStatus] = useState('idle'); // idle | loading | success
   const [submittedRef, setSubmittedRef] = useState('');
+  const [backendSaved, setBackendSaved] = useState(false);
+  const [backendError, setBackendError] = useState('');
 
   const validate = () => {
     const errs = {};
@@ -89,7 +92,7 @@ export default function ApplyPage() {
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const validationErrors = validate();
     if (Object.keys(validationErrors).length > 0) {
@@ -99,22 +102,31 @@ export default function ApplyPage() {
     }
 
     setStatus('loading');
+    setBackendError('');
+    setBackendSaved(false);
 
-    // Simulate backend processing & generate official reference number
-    setTimeout(() => {
-      const ref = `SB-WM-${Math.floor(100000 + Math.random() * 900000)}`;
-      setSubmittedRef(ref);
+    const ref = `SB-WM-${Math.floor(100000 + Math.random() * 900000)}`;
+    setSubmittedRef(ref);
 
-      const submissionData = {
-        ...formData,
-        refNumber: ref,
-      };
+    const submissionData = {
+      ...formData,
+      refNumber: ref,
+      referenceNumber: ref,
+      investmentAmount: Number(formData.investmentAmount) || 0,
+    };
 
-      // Generate & automatically download completed PDF document
-      generateApplicationPdf(submissionData);
+    try {
+     
+      await submitApplication(submissionData);
+      setBackendSaved(true);
+    } catch (err) {
+      console.error('Backend submission error:', err);
+      setBackendError(err.message || 'Could not save to Strapi backend.');
+    }
 
-      setStatus('success');
-    }, 600);
+    
+    generateApplicationPdf(submissionData);
+    setStatus('success');
   };
 
 const inputClass = (field) =>
@@ -161,9 +173,24 @@ const inputClass = (field) =>
               <h2 className="text-3xl font-bold text-[#1B2B5B] mb-2">
                 Application Submitted Successfully!
               </h2>
-              <p className="text-gray-600 mb-6">
+              <p className="text-gray-600 mb-4">
                 Your application has been received and processed. Your official completed PDF application has been generated and downloaded.
               </p>
+
+              {backendSaved && (
+                <div className="mb-6 inline-flex items-center gap-2 bg-green-50 border border-green-200 text-green-800 text-xs font-semibold px-4 py-2 rounded-full">
+                  <span>✓</span> Synced & Saved to Strapi Backend Database
+                </div>
+              )}
+
+              {backendError && (
+                <div className="mb-6 bg-amber-50 border border-amber-300 rounded-xl p-4 text-left text-xs text-amber-900">
+                  <div className="font-bold flex items-center gap-1.5 mb-1 text-amber-800">
+                    <span>⚠️</span> Backend Sync Notice:
+                  </div>
+                  <p>{backendError}</p>
+                </div>
+              )}
 
               <div className="bg-[#F8F9FA] rounded-xl p-5 mb-8 text-left border border-gray-200 space-y-2">
                 <div className="flex justify-between items-center text-sm">

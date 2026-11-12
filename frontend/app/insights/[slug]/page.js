@@ -2,6 +2,8 @@ import Link from 'next/link';
 import ArticleCard from '../../components/ArticleCard';
 import { getArticleBySlug } from '../../lib/api';
 
+export const instant = false;
+
 
 const demoArticles = {
   'sri-lanka-economic-outlook-2025': {

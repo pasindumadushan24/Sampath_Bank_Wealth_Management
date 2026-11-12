@@ -169,3 +169,60 @@ export async function submitAppointment(formData) {
 
   return await res.json();
 }
+
+export async function submitApplication(formData) {
+  const url = `${STRAPI_URL}/api/applications`;
+  
+  const ref = formData.referenceNumber || formData.refNumber || `SB-WM-${Date.now().toString().slice(-6)}`;
+
+  // Format payload strictly matching Strapi application schema
+  const payload = {
+    fullName: formData.fullName || '',
+    nicOrPassport: formData.nicOrPassport || '',
+    phone: formData.phone || '',
+    email: formData.email || '',
+    nationality: formData.nationality || 'Sri Lankan',
+    address: formData.address || '',
+    productName: formData.productName || '',
+    investmentAmount: Number(formData.investmentAmount) || 0,
+    preferredBranch: formData.preferredBranch || '',
+    sourceOfFunds: formData.sourceOfFunds || 'Personal Savings / Income',
+    nomineeName: formData.nomineeName || '',
+    nomineeNic: formData.nomineeNic || '',
+    nomineeRelationship: formData.nomineeRelationship || '',
+    referenceNumber: ref,
+    pdfDownloadUrl: `${STRAPI_URL}/api/applications/${ref}/pdf`,
+    status: 'pending',
+    submittedAt: new Date().toISOString(),
+  };
+
+  // Only include dob if user selected a date string
+  if (formData.dob && String(formData.dob).trim() !== '') {
+    payload.dob = formData.dob;
+  }
+
+  let res;
+  try {
+    res = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ data: payload }),
+    });
+  } catch (netErr) {
+    throw new Error(`Cannot connect to Strapi backend at ${STRAPI_URL}. Please ensure your Strapi server is running.`);
+  }
+
+  if (!res.ok) {
+    const errorData = await res.json().catch(() => ({}));
+    const message = errorData?.error?.message || `Strapi server responded with status ${res.status} (${res.statusText})`;
+    if (res.status === 403) {
+      throw new Error(`Permission Denied (403): Please go to Strapi Admin -> Settings -> Roles -> Public -> Application and tick [✓] 'create', then Save.`);
+    }
+    if (res.status === 404) {
+      throw new Error(`Endpoint Not Found (404): Please restart your Strapi server so it loads the new 'application' API.`);
+    }
+    throw new Error(message);
+  }
+
+  return await res.json();
+}

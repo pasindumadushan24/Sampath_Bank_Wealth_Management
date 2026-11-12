@@ -43,12 +43,12 @@ export default function CalculatorWidget() {
     const t = parseFloat(tenure);
 
     if (mode === 'fd') {
-      // Simple FD interest
+      
       const interest = (p * r * t) / (12 * 100);
       const maturity = p + interest;
       setResult({ principal: p, interest, maturity, rate: r, tenure: t });
     } else {
-      // Compound annual returns
+      
       const years = t / 12;
       const maturity = p * Math.pow(1 + r / 100, years);
       const interest = maturity - p;

@@ -2,6 +2,8 @@ import Link from 'next/link';
 import { getProductBySlug, getProducts } from '../../lib/api';
 import ProductCard from '../../components/ProductCard';
 
+export const instant = false;
+
 const demoProducts = {
   'premium-fixed-deposit': {
     title: 'Premium Fixed Deposit',
