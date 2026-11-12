@@ -88,10 +88,10 @@ function buildApplicationPdfBuffer(data) {
     y -= 22;
 
     for (const f of sec.fields) {
-      // Draw static label
+     
       stream += `BT\n/F2 9 Tf\n0.3 0.35 0.4 rg\n50 ${y + 2} Td\n(${cleanText(f.label)}:) Tj\nET\n`;
 
-      // Interactive editable field rectangle: [llx, lly, urx, ury]
+     
       fieldList.push({
         name: f.name,
         value: f.value || '',
@@ -103,7 +103,7 @@ function buildApplicationPdfBuffer(data) {
     y -= 6;
   }
 
-  // Declaration Notice Box
+  
   stream += '0.98 0.96 0.92 rg\n';
   stream += `40 ${y - 32} 515.28 38 re f\n`;
   stream += '0.784 0.588 0.118 RG\n';
@@ -115,18 +115,18 @@ function buildApplicationPdfBuffer(data) {
 
   y -= 48;
 
-  // Signatures / Office Use Block
+ 
   stream += `BT\n/F2 8 Tf\n0.2 0.2 0.2 rg\n50 ${y} Td\n(Applicant Signature: _______________________) Tj\nET\n`;
   stream += `BT\n/F2 8 Tf\n0.2 0.2 0.2 rg\n330 ${y} Td\n(Bank Officer Signature: _______________________) Tj\nET\n`;
 
-  // Bottom Footer
+  
   stream += '0.106 0.169 0.357 RG\n';
   stream += '40 38 m 555 38 l S\n';
   stream += 'BT\n/F1 7.5 Tf\n0.5 0.5 0.5 rg\n40 26 Td\n(Sampath Bank PLC | Licensed Commercial Bank supervised by CBSL | Head Office: 110 Sir James Peiris Mw, Colombo 02) Tj\nET\n';
 
   stream += 'Q\n';
 
-  // Construct PDF Objects with AcroForm
+  
   let pdf = '%PDF-1.4\n';
   const offsets = [];
 
@@ -140,26 +140,26 @@ function buildApplicationPdfBuffer(data) {
   const firstFieldObjNum = 7;
   const fieldRefs = fieldList.map((_, i) => `${firstFieldObjNum + i} 0 R`).join(' ');
 
-  // 1: Catalog with AcroForm
+  
   addObj(`<< /Type /Catalog /Pages 2 0 R /AcroForm << /Fields [ ${fieldRefs} ] /DR << /Font << /F1 4 0 R /F2 5 0 R >> >> /NeedAppearances true >> >>`);
 
-  // 2: Pages
+  
   addObj('<< /Type /Pages /Kids [3 0 R] /Count 1 >>');
 
-  // 3: Page (with Annots array linking to interactive fields)
+  
   addObj(`<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595.28 841.89] /Resources << /Font << /F1 4 0 R /F2 5 0 R >> >> /Contents 6 0 R /Annots [ ${fieldRefs} ] >>`);
 
-  // 4: Regular Font (Helvetica)
+  
   addObj('<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>');
 
-  // 5: Bold Font (Helvetica-Bold)
+  
   addObj('<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold >>');
 
-  // 6: Content Stream
+  
   const streamLength = Buffer.byteLength(stream, 'utf8');
   addObj(`<< /Length ${streamLength} >>\nstream\n${stream}\nendstream`);
 
-  // 7..7+N-1: Interactive Form Field Widgets
+  
   for (const f of fieldList) {
     const val = cleanText(f.value);
     const rectStr = f.rect.join(' ');
@@ -179,7 +179,7 @@ function buildApplicationPdfBuffer(data) {
 >>`);
   }
 
-  // Xref
+  
   const startXref = Buffer.byteLength(pdf, 'utf8');
   pdf += 'xref\n';
   pdf += `0 ${offsets.length + 1}\n`;
@@ -188,7 +188,7 @@ function buildApplicationPdfBuffer(data) {
     pdf += String(off).padStart(10, '0') + ' 00000 n \n';
   }
 
-  // Trailer
+  
   pdf += `trailer\n<< /Size ${offsets.length + 1} /Root 1 0 R >>\nstartxref\n${startXref}\n%%EOF`;
 
   return Buffer.from(pdf, 'binary');
